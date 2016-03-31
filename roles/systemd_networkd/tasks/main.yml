@@ -1,0 +1,60 @@
+---
+- name: Disable NetworkManager
+  service: name=NetworkManager enabled=no
+
+- name: Enable systemd-networkd
+  service: name=systemd-networkd enabled=yes
+
+- name: Enable systemd-resolved
+  service: name=systemd-resolved enabled=yes
+
+- name: Create systemd-network dir
+  file: >
+    path=/etc/systemd/network
+    state=directory
+
+- name: Create network iface configuration
+  template: >
+    src=kvm_network.j2
+    dest=/etc/systemd/network/ens.network
+    owner=root
+    group=root
+    mode=0644
+
+- name: Create network bridge configuration
+  template: >
+    src=br0.network.j2
+    dest=/etc/systemd/network/br0.network
+    owner=root
+    group=root
+    mode=0644
+
+- name: Create network bridge iface configuration
+  template: >
+    src=br0.netdev.j2
+    dest=/etc/systemd/network/br0.netdev
+    owner=root
+    group=root
+    mode=0644
+
+- name: Create resolv.conf symlink
+  file: >
+    src=/run/systemd/resolve/resolv.conf
+    owner=root
+    group=root
+    dest=/etc/resolv.conf
+    force=yes
+    state=link
+
+- name: Set hostname
+  hostname: name={{ main_host.hostname }}
+
+- name: Reboot and wait till box is up with networkd and resolved
+  shell: 'sleep 2 && shutdown -r now'
+  async: 1
+  poll: 0
+  ignore_errors: true
+
+- name: Wait for box is alive
+  local_action: >
+    wait_for port=22 host="{{ ansible_ssh_host | default(inventory_hostname) }}" search_regex=OpenSSH delay=10

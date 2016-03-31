@@ -1,0 +1,98 @@
+---
+# please specify container name as ansible extra arg (-e "container_name=your_container)
+# please also create config file for this container in inventory/host_vars/your_container.yml
+# in order to create such config_file you can use inventory/host_vars/container_template.yml
+
+- hosts:
+  - core_hosts
+  - test_hosts
+  become: yes
+  vars_files:
+  - ../inventory/host_vars/{{ container_name }}.yml
+  tasks:
+  - name: Check if container FS exists
+    stat: >
+      path={{ sesja.containers.path }}/{{ container_name }}
+    register: container_fs_state
+
+  - name: Copy template FS for new container
+    command: >
+      cp -R {{ sesja.containers.path }}/template {{ sesja.containers.path }}/{{ container_name }}
+    when: container_fs_state.stat.exists == False
+
+  - name: Prepare network configuration directory
+    file: >
+      path={{ sesja.containers.path }}/{{ container_name }}/etc/systemd/network
+      state=directory
+      owner=root
+      group=root
+      mode=0755
+
+  - name: Disable default network device
+    file: >
+      dest={{ sesja.containers.path }}/{{ container_name }}/etc/systemd/network/80-container-host0.network
+      src=/dev/null
+      state=link
+
+  - name: Enable systemd-networkd service inside container
+    file: >
+      dest={{ sesja.containers.path }}/{{ container_name }}/etc/systemd/system/multi-user.target.wants/systemd-networkd.service
+      src={{ sesja.containers.path }}/{{ container_name }}/usr/lib/systemd/system/systemd-networkd.service
+      state=link
+
+  - name: Enable systemd-resolved service inside container
+    file: >
+      dest={{ sesja.containers.path }}/{{ container_name }}/etc/systemd/system/multi-user.target.wants/systemd-resolved.service
+      src={{ sesja.containers.path }}/{{ container_name }}/usr/lib/systemd/system/systemd-resolved.service
+      state=link
+
+  - name: Create host0 configuration file
+    template: >
+      src=templates/host0.network.j2
+      dest={{ sesja.containers.path }}/{{ container_name }}/etc/systemd/network/host0.network
+
+  - name: Enable sshd service inside container
+    file: >
+      dest={{ sesja.containers.path }}/{{ container_name }}/etc/systemd/system/multi-user.target.wants/sshd.service
+      src={{ sesja.containers.path }}/{{ container_name }}/usr/lib/systemd/system/sshd.service
+      state=link
+
+  - name: Create .ssh root dir
+    file: >
+      path={{ sesja.containers.path }}/{{ container_name }}/root/.ssh
+      owner=root
+      group=root
+      mode=0700
+      state=directory
+
+  # not using authorized_key module as running from
+  # outside of container
+  - name: Prepare root's authorized key
+    copy: >
+      src=files/ssh_keys/authorized_keys
+      dest={{ sesja.containers.path }}/{{ container_name }}/root/.ssh/authorized_keys
+      owner=root
+      group=root
+      mode=0600
+
+  - name: Enable container service
+    service: >
+      name=systemd-nspawn@{{ container_name }}.service
+      enabled=yes
+      state=started
+
+  - name: Wait for box is alive
+    local_action:
+      wait_for port=22
+      host="{{ container.addr }}"
+      search_regex=OpenSSH
+
+- hosts:
+  - rundeck
+  remote_user: root
+  become: no
+  vars_files:
+  - ../inventory/host_vars/{{ container_name }}.yml
+  roles:
+  - { role: sudo_env }
+  - { role: ansible_user }

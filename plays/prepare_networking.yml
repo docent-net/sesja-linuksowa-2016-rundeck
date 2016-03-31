@@ -1,0 +1,8 @@
+---
+# replacing NetworkManager w/systemd-networkd
+- hosts:
+  - core_hosts
+  - test_hosts
+  become: yes
+  roles:
+  - { role: systemd_networkd, tags: systemd_networkd }

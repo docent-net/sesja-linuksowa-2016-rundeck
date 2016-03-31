@@ -1,0 +1,25 @@
+---
+# this playbook is not idempotent
+
+- hosts:
+  - core_hosts
+  - test_hosts
+  become: yes
+  tasks:
+  - name: Create container template
+    command: >
+      dnf -y --releasever=23 --installroot={{ sesja.containers.path }}/{{ sesja.containers.template.path }} --disablerepo='*' --enablerepo=fedora install systemd passwd yum fedora-release vim-minimal iproute vim bridge-utils net-tools iproute iputils openssh-server
+
+  # selinux will prevent from e.g. changing root pwd using passwd - next 3 tasks are fix for that
+  # see https://bugzilla.redhat.com/show_bug.cgi?id=1292604 for details
+  - name: Selinux fix no.1
+    command: >
+      chcon -R system_u:object_r:svirt_sandbox_file_t:s0 {{ sesja.containers.path }}/{{ sesja.containers.template.path }}
+
+  - name: Selinux fix no.2
+    command: >
+      semanage fcontext -a -t virtd_exec_t /usr/bin/systemd-nspawn
+
+  - name: Selinux fix no.3
+    command: >
+      restorecon /usr/bin/systemd-nspawn

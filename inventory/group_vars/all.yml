@@ -1,0 +1,9 @@
+sesja:
+  containers:
+    path: /var/lib/machines
+    template:
+      path: template
+  dns:
+    global:
+    - 8.8.8.8
+    - 8.8.4.4

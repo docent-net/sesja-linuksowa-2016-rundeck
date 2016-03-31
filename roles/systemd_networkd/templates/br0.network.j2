@@ -1,0 +1,11 @@
+[Match]
+Name=br0
+
+[Network]
+DNS={{ main_host.dns }}
+
+[Address]
+Address={{ main_host.addr }}/{{ main_host.network }}
+
+[Route]
+Gateway={{ main_host.gateway }}

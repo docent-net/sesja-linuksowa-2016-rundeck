@@ -1,0 +1,11 @@
+[Match]
+Name=host0
+
+[Network]
+DNS={{ container.dns }}
+
+[Address]
+Address={{ container.addr }}/{{ container.network }}
+
+[Route]
+Gateway={{ container.gateway }}

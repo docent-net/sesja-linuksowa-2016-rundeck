@@ -1,0 +1,19 @@
+---
+- name: Enable machines target
+  service: name=machines.target enabled=yes
+
+- name: Create systemd-nspawn service dir
+  file: >
+    path=/etc/systemd/system/systemd-nspawn@.service.d
+    state=directory
+    owner=root
+    group=root
+    mode=755
+
+- name: Override default machine settings
+  file: >
+    src=files/override.conf
+    dest=/etc/systemd/system/systemd-nspawn@.service.d/override.conf
+    owner=root
+    group=root
+    mode=0644
