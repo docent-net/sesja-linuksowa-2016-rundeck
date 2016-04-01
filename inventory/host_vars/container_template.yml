@@ -1,0 +1,6 @@
+container:
+  addr: enter_container_ip_addr_here
+  network: 24
+  gateway: 192.168.122.1
+  hostname: enter_hostname_here
+  dns: "{{ sesja.dns.global[0] }}"

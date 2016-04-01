@@ -1,8 +1,7 @@
 ---
-# replacing NetworkManager w/systemd-networkd
+# replacing NetworkManager w/systemd-networkd and prepare bridged networking
 - hosts:
   - core_hosts
-  - test_hosts
   become: yes
   roles:
   - { role: systemd_networkd, tags: systemd_networkd }

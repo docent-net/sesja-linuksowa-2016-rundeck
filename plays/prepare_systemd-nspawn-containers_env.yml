@@ -1,0 +1,8 @@
+---
+- hosts:
+  - containers
+  remote_user: root
+  become: no
+  roles:
+  - { role: sudo_env }
+  - { role: ansible_user }

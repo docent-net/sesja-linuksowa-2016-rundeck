@@ -1,7 +1,6 @@
 ---
 - hosts:
   - core_hosts
-  - test_hosts
   become: yes
   roles:
   - { role: systemd_nspawn, tags: systemd_nspawn }

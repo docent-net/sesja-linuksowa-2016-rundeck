@@ -1,0 +1,26 @@
+---
+# please create config file for each container in inventory/host_vars/your_container.yml
+# in order to create such config_file you can refer to inventory/host_vars/container_template.yml
+
+- hosts:
+  - core_hosts
+  become: yes
+  vars:
+    # fill this list with all containers you'd like to spawn
+    sesja:
+      containers_list:
+      - rundeck
+      - wordpress
+  tasks:
+  - include: prepare_systemd-nspawn-container.yml
+    with_items: "{{ sesja.containers_list }}"
+
+  - name: Reboot and wait till box is up with all containers registered and up
+    shell: 'sleep 2 && systemctl reboot'
+    async: 1
+    poll: 0
+    ignore_errors: true
+
+  - name: Wait for box is alive
+    local_action: >
+      wait_for port=22 host="{{ ansible_ssh_host | default(inventory_hostname) }}" search_regex=OpenSSH delay=10
