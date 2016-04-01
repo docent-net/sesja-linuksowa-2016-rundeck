@@ -1,0 +1,83 @@
+---
+# we have to create rundeck user and group manually setting uid and gid
+# that's because in case we redeploy application remounted volumes
+# will be set upon previous installation settings (like gid, uid)
+# so we need to make sure gid and uid aren't changed between
+# redeployments
+# see rpm --scripts -qp rundeck-config-2.6.4-1.15.GA.noarch.rpm
+# for details how rundeck creates users and groups
+- name: Create rundeck group
+  group: >
+    gid="{{ rundeck.gid }}"
+    name=rundeck
+    state=present
+
+- name: Create rundeck user
+  user: >
+    createhome=no
+    home="{{ rundeck.work_path }}"
+    name=rundeck
+    state=present
+    uid="{{ rundeck.uid }}"
+    group=rundeck
+
+- name: Make sure work_directory has proper permissions
+  file: >
+    mode=0770
+    path="{{ rundeck.work_path }}"
+    owner=rundeck
+    group=rundeck
+    state=directory
+
+- name: Install java-openjdk
+  dnf: >
+    name=java
+    state=installed
+
+- name: Get rundeck repo rpm
+  yum: >
+    name=http://repo.rundeck.org/latest.rpm
+    state=present
+
+- name: Install rundeck
+  dnf: >
+    name=rundeck
+    state=present
+
+- name: Ensure system service will be brought after reboot
+  service: >
+    name=rundeckd
+    enabled=yes
+
+- name: Ensure server url is configured
+  lineinfile: >
+    dest={{ rundeck.cfg_dir }}/rundeck-config.properties
+    regexp="^grails.serverURL="
+    line="grails.serverURL=http://{{ rundeck.domain }}"
+  notify: restart rundeck
+
+- name: Copy API token property file
+  template:
+    src=tokens.properties.j2
+    dest="{{ rundeck.cfg_dir }}/tokens.properties"
+    owner=rundeck
+    group=rundeck
+    mode=0600
+
+- name: Copy config files
+  copy: >
+    src="{{ item }}"
+    dest="{{ rundeck.cfg_dir }}/{{ item }}"
+    owner=rundeck
+    group=rundeck
+    mode=0600
+  with_items:
+  - apitoken.aclpolicy
+  notify: restart rundeck
+
+- name: Ensure API tokens are configured
+  lineinfile: >
+    dest={{ rundeck.cfg_dir }}/framework.properties
+    regexp="^rundeck.tokens.file="
+    line="rundeck.tokens.file={{ rundeck.cfg_dir }}/tokens.properties"
+  notify: restart rundeck

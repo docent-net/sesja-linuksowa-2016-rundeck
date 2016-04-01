@@ -1,0 +1,5 @@
+- localhost:
+  nodename: localhost
+  hostname: localhost
+  description: "Rundeck host used for running local commands"
+  tags: rundeck

@@ -1,0 +1,24 @@
+{
+  "name": "sesja_project",
+  "config": {
+    "resources.source.2.config.includeServerNode": "false",
+    "project.ssh-authentication": "privateKey",
+    "service.FileCopier.default.provider": "jsch-scp",
+    "resources.source.1.config.filter": "tag-key\=swt_instance",
+    "resources.source.2.config.generateFileAutomatically": "false",
+    "project.description": "sesja_project",
+    "project.ssh-keypath": "{{ rundeck.work_path }}/.ssh/id_rsa",
+    "resources.source.1.config.runningOnly": "false",
+    "service.NodeExecutor.default.provider": "jsch-ssh",
+    "resources.source.2.config.format": "resourceyaml",
+    "resources.source.2.config.file": "{{ rundeck.cfg_dir }}/resources_nodes.d/rundeck_default_hosts.yml",
+    "project.name": "sesja_project",
+    "resources.source.1.config.useDefaultMapping": "true",
+    "resources.source.2.config.requireFileExists": "true",
+    "resources.source.1.type": "aws-ec2",
+    "resources.source.1.config.refreshInterval": "30",
+    "resources.source.1.config.endpoint": "ec2.eu-west-1.amazonaws.com",
+    "resources.source.2.type": "file",
+    "resources.source.1.config.httpProxyPort": "80"
+  }
+}

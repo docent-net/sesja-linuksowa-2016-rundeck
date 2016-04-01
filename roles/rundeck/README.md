@@ -1,0 +1,1 @@
+This role is somehow based on https://github.com/New-Edge-Engineering/ansible-rundeck

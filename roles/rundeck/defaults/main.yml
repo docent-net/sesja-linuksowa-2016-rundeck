@@ -1,0 +1,21 @@
+---
+rundeck:
+  uid: 501
+  gid: 501
+  download_path: "/tmp"
+  cfg_dir: "/etc/rundeck"
+  work_path: "/var/lib/rundeck"
+  database_host: 'localhost'
+  database_name: 'rundeck'
+  database_user: 'rundeck'
+  database_pass: 'rundeck'
+  tcp_port: 4440
+  users: []  # list of users as dictionary of name, password and list of roles
+  generate_ssh: True  # automatically generate ssh key, set to False to stop this action.
+  domain: "{{ ansible_default_ipv4.address }}:4440"
+  plugins: [
+    "https://github.com/rundeck-plugins/rundeck-ec2-nodes-plugin/releases/download/v1.5.1/rundeck-ec2-nodes-plugin-1.5.1.jar" ]
+  projects:
+  - name: sesja_project
+    jobs:
+    - sesja_test_job

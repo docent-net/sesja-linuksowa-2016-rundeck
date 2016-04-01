@@ -1,0 +1,20 @@
+- description: Simple test job
+  executionEnabled: true
+  group: test_group
+  id: 3354f7b0-6203-45d0-b342-022619baecb1
+  loglevel: INFO
+  multipleExecutions: true
+  name: sesja_test
+  options:
+  - description: Just a test option
+    name: test_option
+    required: true
+  scheduleEnabled: false
+  sequence:
+    commands:
+    - script: |-
+        #!/bin/bash
+        echo "option value: $RD_OPTION_TEST_OPTION"
+    keepgoing: false
+    strategy: node-first
+  uuid: 3354f7b0-6203-45d0-b342-022619baecb1

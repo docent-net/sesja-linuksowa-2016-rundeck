@@ -1,0 +1,141 @@
+---
+
+- name: download rundeck plugins
+  get_url: >
+    dest="{{ rundeck.work_path }}/libext/{{ item.split('/')|last }}"
+    url={{ item }}
+  with_items: "{{ rundeck.plugins|default([]) }}"
+  notify: restart rundeck
+
+- name: Set proper permissions on downloaded plugins
+  file: >
+    path={{ item }}
+    owner=rundeck
+    group=rundeck
+    mode=0644
+  with_fileglob:
+  - "{{ rundeck.work_path }}/libext/*jar"
+  notify: restart rundeck
+
+- name: Rundeck | Ensure .ssh directory exists
+  file:
+    path: "{{ rundeck.work_path }}/.ssh"
+    state: directory
+    owner: rundeck
+    group: rundeck
+    mode: 0700
+
+- name: Create ssh prv key
+  copy: >
+    dest="{{ rundeck.work_path }}/.ssh/id_rsa"
+    content="{{ vault.rundeck.rsa_key.prv }}"
+    owner=rundeck
+    group=rundeck
+    mode=0600
+
+- name: Create ssh pub key
+  copy: >
+    dest="{{ rundeck.work_path }}/.ssh/id_rsa.pub"
+    content="{{ vault.rundeck.rsa_key.pub }}"
+    owner=rundeck
+    group=rundeck
+    mode=0600
+
+- name: Prepare yaml resources directory
+  file: >
+    path="{{ rundeck.cfg_dir }}/resources_nodes.d"
+    state=directory
+    group=rundeck
+    owner=rundeck
+    mode=700
+
+- name: Copy nodes definitions
+  copy: >
+    src="{{ item }}"
+    dest="{{ rundeck.cfg_dir }}/resources_nodes.d/"
+    owner=rundeck
+    group=rundeck
+  with_fileglob:
+  - "resources_nodes/*yml"
+  register: nodes_changed
+  notify: restart rundeck
+
+- name: Prepare workspace directory
+  file: >
+    path="{{ rundeck.work_path }}/workspace"
+    state=directory
+    mode=0700
+    owner=rundeck
+    group=rundeck
+
+- name: Prepare scripts directory
+  file: >
+    path="{{ rundeck.work_path }}/scripts"
+    state=directory
+    owner=rundeck
+    group=rundeck
+    mode=0700
+
+- name: Prepare API cli helper
+  copy: >
+    src=scripts/rundeck_api_helper.py
+    dest="{{ rundeck.work_path }}/scripts/rundeck_api_helper.py"
+    owner=rundeck
+    group=rundeck
+    mode=0700
+
+- name: Copy API config
+  template: >
+    src=rundeck_api_helper.cfg.j2
+    dest="{{ rundeck.work_path }}/scripts/rundeck_api_helper.cfg"
+    owner=rundeck
+    group=rundeck
+    mode=0600
+
+- name: Copy required by API helper libraries definition
+  copy: >
+    src=pip_requirements.txt
+    dest="{{ rundeck.work_path }}/requirements.txt"
+    owner=rundeck
+    group=rundeck
+    mode=0600
+
+- name: Install PIP libraries required by custom scripts
+  pip: >
+    state=present
+    requirements="{{ rundeck.work_path }}/requirements.txt"
+
+- name: Make sure Rundeck is running
+  service: >
+    name=rundeckd
+    state=started
+
+- name: Wait until rundeck is started
+  wait_for: >
+    host=127.0.0.1
+    port="{{ rundeck.tcp_port }}"
+    delay=5
+    timeout=600
+
+- name: Remove default admin user
+  lineinfile:
+    dest: "{{ rundeck.cfg_dir }}/realm.properties"
+    regexp: "^admin:admin,user,admin,architect,deploy,build$"
+    state: absent
+  when: vault.rundeck.admin.user.roles | length > 0
+  register: rundeck_admin_user_removed
+
+- name: Generate password for administrative user
+  # this procedure is documented in rundeck docs: http://rundeck.org/docs/administration/authenticating-users.html#propertyfileloginmodule
+  # also we need to redirect stderr to stdout as it is where jetty writes output and we will read from stdout_lines
+  shell: java -cp {{ rundeck.work_path }}/bootstrap/jetty-all-*.jar org.eclipse.jetty.util.security.Password "{{ vault.rundeck.admin.user.name }}" "{{ vault.rundeck.admin.user.password }}" 2>&1
+  register: admin_password
+  when: rundeck_admin_user_removed.changed
+
+- name: encrypt admin password
+  lineinfile:
+    dest: "{{ rundeck.cfg_dir }}/realm.properties"
+    regexp: "^{{ vault.rundeck.admin.user.name }}:(.*)$"
+    line: "{{ vault.rundeck.admin.user.name }}: {{ admin_password.stdout_lines[2]}},{{ vault.rundeck.admin.user.roles | join(',')}}"
+    state: present
+  when: rundeck_admin_user_removed.changed

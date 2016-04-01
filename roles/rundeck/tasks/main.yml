@@ -1,0 +1,14 @@
+---
+
+- include: install_rundeck.yml
+  tags:
+    - install
+    - packages
+
+- include: configure_rundeck.yml
+  tags:
+    - configure
+
+- include: configure_rundeck_projects.yml
+  tags:
+    - configure_projects

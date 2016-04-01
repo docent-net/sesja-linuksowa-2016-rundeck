@@ -3,6 +3,19 @@
   - containers
   remote_user: root
   become: no
+  tags:
+  - env
   roles:
   - { role: sudo_env }
   - { role: ansible_user }
+
+- hosts:
+  - rundeck
+  remote_user: root
+  become: no
+  tags:
+  - rundeck
+  vars_files:
+    - ../vault/vault.yml
+  roles:
+  - { role: rundeck }

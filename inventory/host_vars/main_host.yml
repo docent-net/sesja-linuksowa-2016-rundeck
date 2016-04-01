@@ -1,6 +1,6 @@
 main_host:
   iface: ens3
-  addr: 192.168.122.6
+  addr: 192.168.122.86
   network: 24
   gateway: 192.168.122.1
   hostname: sesja_main_host
