@@ -3,11 +3,14 @@
   - containers
   remote_user: root
   become: no
+  vars_files:
+  - ../vault/vault.yml
   tags:
   - env
   roles:
   - { role: sudo_env }
   - { role: ansible_user }
+  - { role: rundeck_access }
 
 - hosts:
   - rundeck
@@ -16,6 +19,6 @@
   tags:
   - rundeck
   vars_files:
-    - ../vault/vault.yml
+  - ../vault/vault.yml
   roles:
   - { role: rundeck }

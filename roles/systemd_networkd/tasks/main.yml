@@ -1,4 +1,10 @@
 ---
+- name: Install helper packages
+  dnf: >
+    name="{{ item }}"
+    state=installed
+  with_items:
+  - bind_utils
 - name: Disable NetworkManager
   service: name=NetworkManager enabled=no
 

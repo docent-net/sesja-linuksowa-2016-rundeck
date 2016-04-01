@@ -3,3 +3,8 @@
   hostname: localhost
   description: "Rundeck host used for running local commands"
   tags: rundeck
+- wordpress:
+  nodename: wordpress
+  hostname: 192.168.122.200
+  description: "Wordpress node"
+  tags: wordpress

@@ -28,10 +28,10 @@
     {{ rundeck.work_path }}/scripts/rundeck_api_helper.cfg
     create_project
     {{ rundeck.work_path }}/scripts/{{ item.name }}.json
-  register: ec2_project_result
-  changed_when: "'Project was created' in ec2_project_result.stdout"
+  register: project_result
+  changed_when: "'Project was created' in project_result.stdout"
   # dirty hack as we've got always WARNs in stoud:
-  failed_when: ('Project was created' not in ec2_project_result.stdout) and ('Project already exists' not in ec2_project_result.stdout)
+  failed_when: ('Project was created' not in project_result.stdout) and ('Project already exists' not in project_result.stdout)
   with_items: "{{ rundeck.projects }}"
 
 - name: Import jobs via API client
@@ -42,9 +42,9 @@
     create_job
     {{ item.0.name }}
     {{ rundeck.work_path }}/scripts/{{ item.1 }}.yaml
-  register: ec2_import_jobs_result
-  changed_when: "'Job has been created successfully' in ec2_import_jobs_result.stdout"
-  failed_when: ('Job has been created successfully' not in ec2_import_jobs_result.stdout) and ('Job already exists with this UUID' not in ec2_import_jobs_result.stdout)
+  register: import_jobs_result
+  changed_when: "'Job has been created successfully' in import_jobs_result.stdout"
+  failed_when: ('Job has been created successfully' not in import_jobs_result.stdout) and ('Job already exists with this UUID' not in import_jobs_result.stdout)
   with_subelements:
   - "{{ rundeck.projects }}"
   - jobs

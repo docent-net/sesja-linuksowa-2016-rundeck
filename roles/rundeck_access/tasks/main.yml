@@ -1,0 +1,6 @@
+---
+- name: Export rundeck pubkey to the root account
+  authorized_key: >
+      user=root
+      key="{{ vault.rundeck.rsa_key.pub }}"
+      state=present
