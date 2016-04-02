@@ -13,5 +13,8 @@ rundeck
 rundeck
 node[1:5]
 
+[nodes]
+node[1:5]
+
 [core_hosts]
 main_host

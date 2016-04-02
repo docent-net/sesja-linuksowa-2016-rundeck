@@ -1,0 +1,16 @@
+---
+- hosts:
+  - nodes
+  remote_user: root
+  become: no
+  tasks:
+  - name: Install Apache webservice
+    dnf: >
+      name-httpd
+      state=installed
+
+  - name: Make sure HTTPD is started and enabled
+    service: >
+      name=httpd
+      state=started
+      enabled=yes
