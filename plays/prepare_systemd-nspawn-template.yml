@@ -7,7 +7,7 @@
   tasks:
   - name: Create container template
     command: >
-      dnf -y --releasever=23 --installroot={{ sesja.containers.path }}/{{ sesja.containers.template.path }} --disablerepo='*' --enablerepo=fedora install systemd passwd yum fedora-release vim-minimal iproute vim bridge-utils net-tools iproute iputils openssh-server sudo python2 python2-dnf libselinux-python git openssh-clients ansible
+      dnf -y --releasever=23 --installroot={{ sesja.containers.path }}/{{ sesja.containers.template.path }} --disablerepo='*' --enablerepo=fedora install systemd passwd yum fedora-release vim-minimal iproute vim bridge-utils net-tools iproute iputils openssh-server sudo python2 python2-dnf libselinux-python git openssh-clients ansible procps-ng
 
   # selinux will prevent from e.g. changing root pwd using passwd - next 3 tasks are fix for that
   # see https://bugzilla.redhat.com/show_bug.cgi?id=1292604 for details

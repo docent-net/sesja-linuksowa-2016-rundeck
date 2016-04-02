@@ -6,7 +6,7 @@
   tasks:
   - name: Install Apache webservice
     dnf: >
-      name-httpd
+      name=httpd
       state=installed
 
   - name: Make sure HTTPD is started and enabled
