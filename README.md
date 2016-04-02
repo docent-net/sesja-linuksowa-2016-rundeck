@@ -2,7 +2,13 @@
 
 Materials used during presentation I gave on Sesja Linuksowa 2016 in Wrocław / Poland
 
-Using those materials you can repeat all the activities I showed during my talk.
+Using those materials you can repeat all the activities I showed during my talk:
+
+  * creating control machine
+  * spawning systemd-nspawn based lab
+  * deploying rundeck w/configs, projects, jobs
+  * deploying apache webserver over spawned nodes
+  * trying to play w/ansible plugin
 
 ### Howto ###
 
