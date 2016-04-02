@@ -12,7 +12,7 @@
     - script: |-
         #!/bin/bash
         WORKSPACE_PATH="workspace/$RD_JOB_NAME/$RD_JOB_ID/$RD_JOB_EXECID"
-        $RUNDECK_WORK_PATH=/var/lib/rundeck
+        RUNDECK_WORK_PATH=/var/lib/rundeck
         rm -rf $RUNDECK_WORK_PATH/$WORKSPACE_PATH
         mkdir -p $RUNDECK_WORK_PATH/$WORKSPACE_PATH
         git clone https://github.com/docent-net/sesja-linuksowa-2016-rundeck.git
