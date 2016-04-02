@@ -3,8 +3,28 @@
   hostname: localhost
   description: "Rundeck host used for running local commands"
   tags: rundeck
-- wordpress:
-  nodename: wordpress
-  hostname: 192.168.122.200
-  description: "Wordpress node"
-  tags: wordpress
+- node1:
+  nodename: node1
+  hostname: 192.168.122.201
+  description: "node 1"
+  tags: ['node1', 'basic_nodes']
+- node2:
+  nodename: node2
+  hostname: 192.168.122.202
+  description: "node 2"
+  tags: ['node2', 'basic_nodes']
+- node3:
+  nodename: node3
+  hostname: 192.168.122.203
+  description: "node 3"
+  tags: ['node3', 'basic_nodes']
+- node1:
+  nodename: node4
+  hostname: 192.168.122.204
+  description: "node 4"
+  tags: ['node4', 'basic_nodes']
+- node1:
+  nodename: node5
+  hostname: 192.168.122.205
+  description: "node 5"
+  tags: ['node5', 'basic_nodes']

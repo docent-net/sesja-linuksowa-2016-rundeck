@@ -99,3 +99,9 @@
     enabled=yes
     state=started
 
+- name: add proper settings for rundeck user to /etc/sudoers
+  lineinfile: >
+    dest=/etc/sudoers
+    regexp="^Defaults:rundeck	!requiretty"
+    line="Defaults:rundeck	!requiretty"
+

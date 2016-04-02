@@ -10,7 +10,11 @@
     sesja:
       containers_list:
       - rundeck
-      - wordpress
+      - node1
+      - node2
+      - node3
+      - node4
+      - node5
   tasks:
   - include: prepare_systemd-nspawn-container.yml
     with_items: "{{ sesja.containers_list }}"

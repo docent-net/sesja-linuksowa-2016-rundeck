@@ -22,7 +22,7 @@ By **control_host** we assume host from which we run ansible-playbooks (probably
 1. Prepare systemd-nspawn containers on which we will deploy lab applications:
   * Prepare systemd-nspawn container template: `ansible-playbook -i inventory/hosts plays/prepare_systemd-nspawn-template.yml`
   * Prepare systemd-nspawn environment on main_host: `ansible-playbook -i inventory/hosts plays/prepare_systemd-nspawn.yml`
-  * Spawn systemd-nspawn containers: `ansible-playbook -i inventory/hosts plays/prepare_systemd-nspawn-containers.yml `
+  * Spawn systemd-nspawn containers: `ansible-playbook -i inventory/hosts plays/prepare_systemd-nspawn-containers.yml`
   * On your **control_host** prepare file **~/.config/vault_sesja.pwd** and make it contain only string: **sesja_haslo_vault**: `echo "sesja_haslo_vault" > ~/.config/vault_sesja.pwd`
   * Prepare basic environment on containers: `ansible-playbook -i inventory/hosts plays/prepare_systemd-nspawn-containers_env.yml --vault-password-file ~/.config/vault_sesja.pwd --tags env`
 1. Deploy rundeck app:

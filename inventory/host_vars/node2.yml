@@ -1,0 +1,6 @@
+container:
+  addr: 192.168.122.202
+  network: 24
+  gateway: 192.168.122.1
+  hostname: node2
+  dns: "{{ sesja.dns.global[0] }}"

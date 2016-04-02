@@ -20,3 +20,4 @@ rundeck:
   - name: sesja_project
     jobs:
     - sesja_test_job
+    - apache_provisioner

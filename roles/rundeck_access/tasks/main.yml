@@ -4,3 +4,35 @@
       user=root
       key="{{ vault.rundeck.rsa_key.pub }}"
       state=present
+
+- name: Create rundeck group
+  group: >
+      name=rundeck
+      state=present
+
+- name: Create rundeck user
+  user: >
+      name=rundeck
+      state=present
+      group=rundeck
+
+- name: Export rundeck key to the rundeck account
+  authorized_key: >
+      user=rundeck
+      key="{{ vault.rundeck.rsa_key.pub }}"
+      state=present
+
+- name: Nasty fix for sudo bin - somehow it has wrong permissions
+  file: >
+    path=/usr/bin/sudo
+    owner=root
+    group=root
+    mode=4755
+
+- name: sudo from rundeck to root without password
+  copy: >
+    dest=/etc/sudoers.d/rundeck
+    content="rundeck               ALL=(ALL)       NOPASSWD: ALL"
+    owner=root
+    group=root
+    mode=0600

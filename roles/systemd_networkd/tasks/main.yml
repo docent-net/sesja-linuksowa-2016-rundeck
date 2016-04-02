@@ -5,6 +5,7 @@
     state=installed
   with_items:
   - bind-utils
+
 - name: Disable NetworkManager
   service: name=NetworkManager enabled=no
 

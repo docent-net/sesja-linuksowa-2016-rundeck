@@ -1,6 +1,6 @@
 container:
-  addr: 192.168.122.201
+  addr: 192.168.122.203
   network: 24
   gateway: 192.168.122.1
-  hostname: wordpress
+  hostname: node3
   dns: "{{ sesja.dns.global[0] }}"
